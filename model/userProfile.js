@@ -45,10 +45,6 @@ const UserProfile = sequelize.define("userProfile", {
         type: Sequelize.STRING,
         allowNull: true,
     },
-    preferredService: {
-        type: Sequelize.STRING, // Store user's preferred service
-        allowNull: true,
-    }
 });
 
 module.exports = UserProfile;
