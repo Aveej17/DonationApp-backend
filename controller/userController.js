@@ -5,8 +5,9 @@ const UserException = require("../exception/UserException");
 const {generateToken} = require('../middleware/jwt');
 const {sendCredentialsByEmail} = require('./mailController');
 const UserProfile = require("../model/userProfile");
+const s3 = require('./awsS3Controller');
+const moment = require('moment');
 
-const s3 = require('../util/aws');
 
 exports.signUp = async (req, res, next) => {
     try {
@@ -108,34 +109,63 @@ exports.resetPassword = async(req, res, next) =>{
 
 exports.createOrUpdateProfile = async (req, res, next) => {
     try {
-        const { address, city, postalCode, country, dateOfBirth, gender, profilePicture} = req.body;
+        const { address, city, postalCode, country, dateOfBirth, gender } = req.body;
 
+        // Check for null or undefined fields
+        if (!address || !city || !postalCode || !country || !dateOfBirth || !gender) {
+            return res.status(400).json({ 
+                message: "All fields (address, city, postalCode, country, dateOfBirth, gender) are required.", 
+                success: false 
+            });
+        }
         const userId = req.authId; 
+        let profilePictureUrl;
+
+        const profilePicture = req.file;
+        if (!profilePicture) {
+            return res.status(400).json({ message: "Profile picture is required", success: false });
+        }
+
+        try {
+            const buffer = profilePicture.buffer;
+            const fileUrl = await s3.uploadFileToS3(`users/${userId}.jpg`, buffer);
+            console.log("File uploaded to S3:", fileUrl);
+            profilePictureUrl = fileUrl;
+            console.log(profilePictureUrl+"profilePictureUrl");
+        } catch (err) {
+            console.error("Error uploading to S3:", err);
+            return next(err); // Pass error to global error handler
+        }
+
+        // Parse and format dateOfBirth to ISO format
+        const formattedDateOfBirth = moment(dateOfBirth, "DD/MM/YYYY", true).format("YYYY-MM-DD");
+        if (!formattedDateOfBirth || formattedDateOfBirth === "Invalid date") {
+            return res.status(400).json({ message: "Invalid date format", success: false });
+        }
+
         let profile = await UserProfile.findOne({ where: { userId } });
 
         if (profile) {
-            // Update existing profile
             await profile.update({
                 address,
                 city,
                 postalCode,
                 country,
-                dateOfBirth,
+                dateOfBirth: formattedDateOfBirth,
                 gender,
-                profilePicture,
+                profilePicture:profilePictureUrl,
             });
             res.status(200).json({ message: "Profile updated successfully", success: true });
         } else {
-            // Create a new profile
             profile = await UserProfile.create({
                 userId,
                 address,
                 city,
                 postalCode,
                 country,
-                dateOfBirth,
+                dateOfBirth: formattedDateOfBirth,
                 gender,
-                profilePicture,
+                profilePicture:profilePictureUrl,
             });
             res.status(201).json({ message: "Profile created successfully", success: true });
         }
@@ -157,53 +187,3 @@ exports.getProfile = async (req, res, next) => {
         next(err);
     }
 };
-
-
-exports.getUrl = async (req, res, next) => {
-    // console.log(req.authId);
-    const  userId = req.authId; 
-    const fileName = `${userId}.png`; // Or .jpg depending on your requirements
-    console.log(fileName);
-    
-    const params = {
-        Bucket: process.env.BUCKET_NAME,
-        Key: `profile-pictures/${fileName}`,
-        Expires: 60, // URL expires in 60 seconds
-        ContentType: 'image/png' // Change this to image/jpeg if needed
-    };
-
-    try {
-        const url = await s3.getSignedUrlPromise('putObject', params);
-        console.log("url "+url);
-        res.json({ url }); // Return the pre-signed URL to the client
-    } catch (err) {
-        console.error("Error generating pre-signed URL", err);
-        res.status(500).send("Error generating URL");
-    }
-    
-};
-
-
-// exports.getUrl = async (req, res, next) =>{
-//     try{
-//         console.log("UrlGets called");
-//         const mimeType = fileExtension === 'jpg' ? 'image/jpeg' : 'image/png';
-//     const params = {
-//         Bucket: process.env.BUCKET_NAME,
-//         Key: `profile-pictures/${req.authId}.${fileExtension}`, // User-specific path
-//         Expires: 60, // URL expiration time in seconds
-//         ContentType: 'image/png' // Specify the expected content type
-//     };
-
-//     s3.getSignedUrl('putObject', params, (err, url) => {
-//         if (err) {
-//             console.log(err);
-            
-//             return res.status(500).send(err);
-//         }
-//         res.json({ url }); // Send the pre-signed URL back to the client
-//     });}
-//     catch(err){
-//         throw new Error("Something went wrong");
-//     }
-// }
