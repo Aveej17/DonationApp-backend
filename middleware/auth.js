@@ -21,9 +21,23 @@ exports.authentication = async (req, res, next) =>{
     }
 }
 
-exports.authorization = (req, res, next) =>{
+// exports.authorization = (req, res, next) =>{
+//     try {
+//         if(req.role){
+//             next();
+//         }
+//         else{
+//             throw new PermissionDeniedException("Not authorized for this");
+//         }
+//     }
+//     catch(err){
+//         next(err);
+//     }
+// }
+
+exports.isAdminAuthorization = (req, res, next) =>{
     try {
-        if(req.role){
+        if(req.role === "admin"){
             next();
         }
         else{
@@ -35,9 +49,9 @@ exports.authorization = (req, res, next) =>{
     }
 }
 
-exports.isAdminAuthorization = (req, res, next) =>{
+exports.isCharityAuthorization = (req, res, next) =>{
     try {
-        if(req.role === "admin"){
+        if(req.role === "charity"){
             next();
         }
         else{

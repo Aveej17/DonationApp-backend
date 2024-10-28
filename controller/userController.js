@@ -4,6 +4,7 @@ const { hashPassword, comparePassword } = require('../middleware/bcrypt');
 const UserException = require("../exception/UserException");
 const {generateToken} = require('../middleware/jwt');
 const {sendCredentialsByEmail} = require('./mailController');
+const {generateRandomPassword} = require('../util/generateRandomPassword');
 const UserProfile = require("../model/userProfile");
 const s3 = require('./awsS3Controller');
 const moment = require('moment');
@@ -50,7 +51,7 @@ exports.login = async (req, res, next) =>{
         if(!await comparePassword(req.body.password, user.password)){
             throw new UserException("Kindly verify the credentials");
         }
-        const token = await generateToken({id: user.id});
+        const token = await generateToken({id: user.id, role:"user"});
 
         res.status(200).json({token:token, success:true});
 
@@ -180,7 +181,7 @@ exports.getProfile = async (req, res, next) => {
 
         const profile = await UserProfile.findOne({ where: { userId } });
         if (!profile) {
-            return null;
+            res.send(200).json({profile, success:true});
         }
         res.status(200).json({ profile, success: true });
     } catch (err) {

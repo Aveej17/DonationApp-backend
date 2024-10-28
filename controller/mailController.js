@@ -12,75 +12,92 @@ const transporter = nodemailer.createTransport({
 // Function to send email with credentials
 exports.sendCredentialsByEmail=async(email, password)=> {
     const mailOptions = {
-        from: 'no-reply@salon.com',
+        from: 'no-reply@donationapp.com',
         to: email,
-        subject: 'Your Salon Account Credentials',
+        subject: 'Your Donation app Account Credentials',
         text: `Welcome! Here are your login credentials:\nEmail: ${email}\nPassword: ${password}\nPlease log in and change your password.`
     };
 
     await transporter.sendMail(mailOptions);
 }
 
-exports.sendEmailForAppointment = async (email, appointmentDetails) => {
-    const { date, startTime, endTime, serviceName, employeeName } = appointmentDetails;
-
+exports.sendCharityApprovalMail=async (email) =>{
     const mailOptions = {
-        from: 'no-reply@salon.com',
-        to: email,
-        subject: 'Salon Appointment Scheduled for you!',
+        from : 'no-reply@donationapp.com',
+        to : email,
+        subject: 'Your Donation account Charity Creation is Approved',
         text: `
-            Hello!
+        Dear Charity Team,
 
-            Thank you for booking an appointment with us. Here are your appointment details:
+        Congratulations! We are excited to inform you that your charity registration has been approved. 
 
-            Service: ${serviceName}
-            Date: ${new Date(date).toLocaleDateString()}
-            Time: ${startTime} - ${endTime}
-            Stylist: ${employeeName}
+        Your commitment to making a positive impact in the community is commendable, and we are thrilled to have you on board with us. 
 
-            We look forward to seeing you!
+        You can now start creating projects, accepting donations, and sharing your mission with the world. 
 
-            Best regards,
-            The Salon Team
-        `
-    };
+        If you have any questions or need assistance, feel free to reach out to us at support@donationapp.com.
 
-    await transporter.sendMail(mailOptions);
-};
+        Thank you for your dedication to making a difference!
 
-// Function to send payment email
-exports.sendPaymentEmail = async (userId, paymentLink)=>{
-    const user = await User.findByPk(userId);
-    const mailOptions = {
-        from: 'no-reply@salon.com',
-        to: user.email,
-        subject: 'Payment Required for Your Appointment',
-        text: `Please complete your payment within 10 minutes to confirm your appointment: ${paymentLink}`
-    };
-
+        Best regards,
+        The Donation App Team
+    `,
+    }
     await transporter.sendMail(mailOptions);
 }
 
-exports.sendCancellationEmail = async (email, appointmentDetails) => {
-    const { appointmentId, date, startTime, endTime, serviceName, employeeName } = appointmentDetails;
-
+exports.sendCharityRejectionMail=async (email) =>{
     const mailOptions = {
-        from: 'no-reply@salon.com',
+        from : 'no-reply@donationapp.com',
+        to : email,
+        subject: 'Your Donation account Charity Creation is Approved',
+        text: `
+            Dear Charity Team,
+
+            We regret to inform you that your application for charity registration has not been approved at this time. 
+
+            We understand that this may be disappointing news. Please know that your application was carefully reviewed, and the decision was made based on our current criteria and guidelines.
+
+            If you would like to understand the reasons for the rejection or if you have any questions, please feel free to reach out to us at support@donationapp.com. We value your interest in our platform and would be happy to assist you in the future.
+
+            Thank you for your understanding, and we wish you all the best in your charitable endeavors.
+
+            Best regards,
+            The Donation App Team
+        `,
+    }
+    await transporter.sendMail(mailOptions);
+}
+
+
+exports.sendEmailForDonation = async (email, details) => {
+    // Customize the subject and text based on the donation details
+    const mailOptions = {
+        from: 'no-reply@DonationApp.com',
         to: email,
-        subject: 'Your Appointment has been Cancelled',
-        text: `Dear Customer,\n\n` +
-            `We regret to inform you that your appointment with ID ${appointmentId} has been cancelled.\n\n` +
-            `Here are the details of your appointment:\n` +
-            `- Date: ${date}\n` +
-            `- Start Time: ${startTime}\n` +
-            `- End Time: ${endTime}\n` +
-            `- Service: ${serviceName}\n` +
-            `- Employee: ${employeeName}\n\n` +
-            `If you have any questions or would like to reschedule, please contact us.\n\n` +
-            `Thank you for your understanding!\n` +
-            `Best Regards,\n` +
-            `Your Salon Team`
+        subject: 'Thank You for Your Donation!',
+        text: `
+            Dear Donor,
+
+            Thank you for your generous donation!
+
+            Donation Details:
+            - Amount: ₹${(details.amount).toFixed(2)} INR
+            - Charity ID: ${details.charityName}
+            - User ID: ${details.userName}
+            - Donation Date: ${new Date().toLocaleDateString()}
+
+            Your support makes a difference!
+
+            Best regards,
+            DonationApp Team
+        `,
     };
 
-    await transporter.sendMail(mailOptions);
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log('Email sent successfully');
+    } catch (error) {
+        console.error('Error sending email:', error);
+    }
 };
