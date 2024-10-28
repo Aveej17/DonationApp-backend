@@ -1,5 +1,7 @@
 const {Sequelize, DataTypes} = require("sequelize");
 const sequelize = require("../util/database");
+const User = require('./userModel');
+const Charity = require('./charityModel');
 
 const Donation = sequelize.define("donation", {
   userId: { type: DataTypes.INTEGER, allowNull: false },
@@ -8,5 +10,10 @@ const Donation = sequelize.define("donation", {
   paymentId: { type: DataTypes.STRING, unique: true, allowNull: false },
   status: { type: DataTypes.STRING, allowNull: false, defaultValue: "pending" },
 });
+
+
+  Donation.belongsTo(User, { foreignKey: 'userId' });
+  Donation.belongsTo(Charity, { foreignKey: 'charityId' });
+
 
 module.exports = Donation;

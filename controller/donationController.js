@@ -3,6 +3,9 @@ const crypto = require("crypto");
 const User = require('../model/userModel');
 const Charity = require('../model/charityModel');
 const {sendEmailForDonation} = require('./mailController');
+const PDFDocument = require('pdfkit');
+const { PassThrough } = require('stream');
+const s3 = require('./awsS3Controller');
 
 require('dotenv').config();
 
@@ -86,6 +89,50 @@ exports.getDonationHistory = async(req, res, next)=>{
     try{
         const donations = await Donation.findAll({while:{userId:req.authId}});
         res.status(200).json({success:true, donations});
+    }
+    catch(err){
+        next(err);
+    }
+}
+
+
+
+exports.downloadReceipt  = async(req, res, next) =>{
+    try {
+        const { donationId } = req.params;
+        // console.log("going to fetch donation");
+        
+        // Fetch donation details from the database
+        const donation = await Donation.findOne({
+            where: { id: donationId, userId: req.authId },
+            include: [{ model: Charity, as:'charity', model: User, as:'user'}],
+        });
+        console.log(donation);
+        
+        if (!donation) {
+            return res.status(404).json({ success: false, message: "Donation not found" });
+        }
+
+        // Generate the PDF in memory using a PassThrough stream
+        const doc = new PDFDocument();
+        const pdfStream = new PassThrough();
+        doc.pipe(pdfStream);
+
+        // Add content to the PDF
+        doc.fontSize(20).text('Donation Receipt', { align: 'center' });
+        doc.moveDown();
+        doc.fontSize(12).text(`Donation ID: ${donation.id}`);
+        doc.text(`Amount: ${donation.amount}`);
+        doc.text(`Donor: ${donation.user.name}`);
+        doc.text(`Charity: ${donation.charity?.name || 'Unknown Charity'}`); // Optional chaining to handle undefined
+        doc.text(`Date: ${donation.createdAt.toDateString()}`);
+        doc.text(`Thank you for your generous donation!`);
+        doc.end();
+
+        // Upload to S3
+        const fileUrl = await s3.downloadReceipt(donationId, pdfStream);
+        // console.log(fileUrl);
+        res.status(201).send({ success: true, fileUrl });
     }
     catch(err){
         next(err);

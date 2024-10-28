@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize');
 const sequelize = require('../util/database');
+const User = require('./userModel');
 
 const UserProfile = sequelize.define("userProfile", {
     id: {
@@ -12,7 +13,7 @@ const UserProfile = sequelize.define("userProfile", {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-            model: 'users', // Links to the User table
+            model: 'users', 
             key: 'id'
         },
         onDelete: 'CASCADE',
@@ -46,5 +47,8 @@ const UserProfile = sequelize.define("userProfile", {
         allowNull: true,
     },
 });
+
+UserProfile.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+User.hasOne(UserProfile, { foreignKey: 'userId', as: 'profile' });
 
 module.exports = UserProfile;

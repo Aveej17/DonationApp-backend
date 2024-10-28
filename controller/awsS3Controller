@@ -26,3 +26,27 @@ exports.uploadFileToS3 = async (fileName, fileContent) => {
         throw new Error("File upload failed");
     }
 };
+
+
+exports.downloadReceipt = async (donationId, pdfStream) => {
+    
+    // Define S3 upload parameters
+    const s3Params = {
+        Bucket: process.env.BUCKET_NAME,
+        Key: `receipts/receipt_${donationId}.pdf`, // S3 file path
+        Body: pdfStream,
+        ContentType: 'application/pdf',
+        ACL: 'public-read', // Allows public access to the file
+    };
+
+    // Upload the PDF to S3
+    try {
+        const data = await s3.upload(s3Params).promise();
+        // console.log(data+"data");
+        
+        return data.Location;   
+    }
+    catch (err) {
+        throw new Error("File upload failed");
+    }
+};
