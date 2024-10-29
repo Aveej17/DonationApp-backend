@@ -70,6 +70,9 @@ exports.changePassword = async (req, res, next) => {
     }
 
     const user = await User.findByPk(req.authId);
+    if (!(await comparePassword(req.body.oldPassword, user.password))) {
+        throw new UserException("Kindly verify the credentials");
+      }
     if (!user) {
       throw new UserException("User Not Found");
     }
@@ -143,12 +146,12 @@ exports.createOrUpdateProfile = async (req, res, next) => {
     try {
       const buffer = profilePicture.buffer;
       const fileUrl = await s3.uploadFileToS3(`users/${userId}.jpg`, buffer);
-      console.log("File uploaded to S3:", fileUrl);
+    //   console.log("File uploaded to S3:", fileUrl);
       profilePictureUrl = fileUrl;
-      console.log(profilePictureUrl + "profilePictureUrl");
+    //   console.log(profilePictureUrl + "profilePictureUrl");
     } catch (err) {
       console.error("Error uploading to S3:", err);
-      return next(err); // Pass error to global error handler
+        next(err); // Pass error to global error handler
     }
 
     // Parse and format dateOfBirth to ISO format

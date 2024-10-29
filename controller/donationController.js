@@ -98,9 +98,13 @@ exports.downloadReceipt = async (req, res, next) => {
 
     // Fetch donation details from the database
     const donation = await Donation.findOne({
-      where: { id: donationId, userId: req.authId },
-      include: [{ model: Charity, as: "charity", model: User, as: "user" }],
+        where: { id: donationId, userId: req.authId },
+        include: [
+            { model: Charity, as: "charity" }, // Include the Charity model
+            { model: User, as: "user" }        // Include the User model
+        ],
     });
+    
     console.log(donation);
 
     if (!donation) {
@@ -120,7 +124,7 @@ exports.downloadReceipt = async (req, res, next) => {
     doc.fontSize(12).text(`Donation ID: ${donation.id}`);
     doc.text(`Amount: ${donation.amount}`);
     doc.text(`Donor: ${donation.user.name}`);
-    doc.text(`Charity: ${donation.charity?.name || "Unknown Charity"}`); // Optional chaining to handle undefined
+    doc.text(`Charity: ${donation.charity?.name}`); // Optional chaining to handle undefined
     doc.text(`Date: ${donation.createdAt.toDateString()}`);
     doc.text(`Thank you for your generous donation!`);
     doc.end();

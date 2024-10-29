@@ -299,51 +299,476 @@ HTTP/1.1 200 OK Content-Type: application/json
 When a charity wants to update their information, they send a PUT request with their updated category and location. Upon successful update, the response includes the updated charity details along with a success message.
 
 
-## Get Charities by Location
 
-### Retrieve Charities
 
-- **HTTP Method**: `GET`
-- **Endpoint**: `/api/v1/charity/get`
+## Create Donation
 
-#### Query Parameters
+### Donation
 
-- **location** (required): The location to filter charities (e.g., `Chennai`).
+- **HTTP Method**: `POST`
+- **Endpoint**: `/api/v1/donation/create`
 
 #### Authentication
 
 - **Header**: `Authorization: Bearer <token>`
 
-#### HTTP Request Example:
 
-GET /api/v1/charity/get?location=Chennai HTTP/1.1 Host: api.yourdomain.com Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6ImNoYXJpdHkiLCJpYXQiOjE3MzAyMDYxMjksImV4cCI6MTczMDI5MjUyOX0.KJlyV27IgOOb9OwA-23kp6rtspq4sLbD4K13zX1Cvno
+#### HTTP Request Example
 
-#### Expected HTTP Response:
-HTTP/1.1 200 OK Content-Type: application/json
+POST /api/v1/donation/create HTTP/1.1
+Host: api.yourdomain.com
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6ImNoYXJpdHkiLCJpYXQiOjE3MzAyMDYxMjksImV4cCI6MTczMDI5MjUyOX0.KJlyV27IgOOb9OwA-23kp6rtspq4sLbD4K13zX1Cvno
+Content-Type: application/json
 
-{ "charities": [ { "id": 1, "name": "Charity1", "description": "charity for children", "email": "charity1@gmail.com", "password": "$2b$10$kzqzymY5/kediuFd.fsP0u/EPwv1OaueciJmlufmtn6KX3xEnUIzy", "mission": "Achieve No Child labour", "goals": "Educate 10000 children in 2025", "category": "children", "location": "Chennai", "isApproved": true, "createdAt": "2024-10-29T09:52:38.000Z", "updatedAt": "2024-10-29T12:51:00.000Z" } ] }
+{
+    "amount": 100,
+    "charityId": 1
+}
+
+##### Expected HTTP Response
+
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "key_id": "rzp_test_QvbON6FIPij43r",
+    "orderId": "order_PErSQoen9OIWL1",
+    "amount": 10000,
+    "currency": "INR",
+    "userId": 3,
+    "charityId": 1
+}
 
 
-### Explanation of the Request and Response
+##### Explanation of the Request and Response
 
-- **Query Parameters**: 
-  - `location`: The location for which you want to retrieve the list of charities (e.g., "Chennai").
+Request Body:
 
-- **Response**: JSON object containing:
-  - `charities`: An array of charity objects that match the specified location. Each charity object contains:
-    - `id`: The unique identifier of the charity.
-    - `name`: The name of the charity.
-    - `description`: A brief description of the charity's mission.
-    - `email`: The email address associated with the charity.
-    - `mission`: The charity's mission statement.
-    - `goals`: The goals the charity aims to achieve.
-    - `category`: The category under which the charity operates.
-    - `location`: The location of the charity.
-    - `isApproved`: Indicates if the charity is approved by the admin.
-    - `createdAt`: The timestamp when the charity was created.
-    - `updatedAt`: The timestamp when the charity was last updated.
+amount: The amount of the donation (e.g., 100).
+charityId: The ID of the charity to which the donation is being made.
+Response: JSON object containing:
 
-### Example Usage
+key_id: The key ID for the payment gateway.
+orderId: The unique order ID generated for the donation.
+amount: The amount of the donation (in paise, hence multiplied by 100).
+currency: The currency in which the donation is made (e.g., "INR").
+userId: The ID of the user making the donation.
+charityId: The ID of the charity receiving the donation.
 
-When a user wants to find charities located in Chennai, they send a GET request with the location query parameter. The response includes a list of charities that match the specified location, including their details.
+## Get Donation History
+
+### Donation History
+
+- **HTTP Method**: `GET`
+- **Endpoint**: `/api/v1/donation/history`
+
+#### Authentication
+
+- **Header**: `Authorization: Bearer <token>`
+
+#### Expected HTTP Response
+
+http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "success": true,
+    "donations": [
+        {
+            "id": 1,
+            "userId": 3,
+            "charityId": 1,
+            "amount": 100,
+            "paymentId": "pay_PErpIL2aUOsfKI",
+            "status": "confirmed",
+            "createdAt": "2024-10-29T13:18:18.000Z",
+            "updatedAt": "2024-10-29T13:18:18.000Z"
+        }
+    ]
+}
+
+
+## Download Donation Receipt
+
+### Download Donation Receipt
+
+- **HTTP Method**: `GET`
+- **Endpoint**: `/api/v1/donation/downloadReceipts/{donationId}`
+
+#### Path Parameters
+
+- **donationId** (required): The unique identifier of the donation (e.g., `3`).
+
+#### Authentication
+
+- **Header**: `Authorization: Bearer <token>`
+
+#### Expected HTTP Response
+http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "success": true,
+    "fileUrl": "https://s3.amazonaws.com/receipts/receipt_3.pdf"
+}
+
+
+## Get Projects
+
+### Retrieve Charity Projects
+
+- **HTTP Method**: `GET`
+- **Endpoint**: `/api/v1/charity/projects`
+
+#### Query Parameters
+
+- **charityId** (required): The unique identifier of the charity for which to retrieve projects (e.g., `1`).
+
+#### Authentication
+
+- **Header**: `Authorization: Bearer <token>`
+
+#### Expected HTTP Response
+
+http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "message": "Projects retrieved successfully",
+    "projects": [
+        {
+            "id": 1,
+            "name": "project1",
+            "description": "simple description",
+            "donationGoal": "2000000.00",
+            "amountRaised": "1000000.00",
+            "charityId": 1,
+            "createdAt": "2024-10-29T13:32:54.000Z",
+            "updatedAt": "2024-10-29T13:32:54.000Z"
+        }
+    ]
+}
+
+
+## Add Project
+
+### Create a New Charity Project
+
+- **HTTP Method**: `POST`
+- **Endpoint**: `/api/v1/charity/add-project`
+
+#### Authentication
+
+- **Header**: `Authorization: Bearer <token>`
+
+#### Request Body
+
+```json
+{
+    "name": "project1",
+    "description": "simple description",
+    "donationGoal": 2000000,
+    "amountRaised": 1000000
+}
+```
+
+#### Expected HTTP Response
+HTTP/1.1 201 Created
+Content-Type: application/json
+```json
+{
+    "message": "Project added successfully",
+    "project": {
+        "id": 1,
+        "name": "project1",
+        "description": "simple description",
+        "donationGoal": 2000000,
+        "amountRaised": 1000000,
+        "charityId": 1,
+        "updatedAt": "2024-10-29T13:32:54.199Z",
+        "createdAt": "2024-10-29T13:32:54.199Z"
+    }
+}
+```
+
+## Update Project
+
+### Update an Existing Charity Project
+
+- **HTTP Method**: `PUT`
+- **Endpoint**: `/api/v1/charity/update-project/{projectId}`
+
+#### Authentication
+
+- **Header**: `Authorization: Bearer <token>`
+
+#### Request Body
+
+```json
+{
+    "name": "New Project Name",
+    "description": "Updated description for the project.",
+    "donationGoal": 15000.00,
+    "amountRaised": 5000.00
+}
+```
+
+HTTP/1.1 200 OK
+Content-Type: application/json
+```json
+{
+    "message": "Project updated successfully",
+    "project": {
+        "id": 1,
+        "name": "New Project Name",
+        "description": "Updated description for the project.",
+        "donationGoal": 15000,
+        "amountRaised": 5000,
+        "charityId": 1,
+        "createdAt": "2024-10-29T13:32:54.000Z",
+        "updatedAt": "2024-10-29T13:53:22.480Z"
+    }
+}
+```
+
+## User Signup
+
+### Create a New User Account
+
+- **HTTP Method**: `POST`
+- **Endpoint**: `/api/v1/user/signup`
+
+#### Request Body
+
+```json
+{
+    "name": "Jeeva1",
+    "email": "Jeeva1@gmail.com",
+    "password": "Jeeva1"
+}
+```
+
+HTTP/1.1 201 Created
+Content-Type: application/json
+```json
+{
+    "message": "User Account Created",
+    "success": true
+}
+```
+
+## User Login
+
+### Authenticate a User
+
+- **HTTP Method**: `POST`
+- **Endpoint**: `/api/v1/user/login`
+
+#### Request Body
+
+```json
+{
+    "email": "Jeeva1@gmail.com",
+    "password": "Jeeva1"
+}
+```
+
+HTTP/1.1 200 OK
+Content-Type: application/json
+```json
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mywicm9sZSI6InVzZXIiLCJpYXQiOjE3MzAyMDc4NDYsImV4cCI6MTczMDI5NDI0Nn0.mm-5O_81_nEISt6aPkzrS5bwTIaBAx2haJZLC4xgNkE",
+    "success": true
+}
+```
+
+## Reset Password
+
+### Request a Password Reset
+
+- **HTTP Method**: `POST`
+- **Endpoint**: `/api/v1/user/resetPassword`
+
+#### Request Body
+
+```json
+{
+    "email": "Jeeva1@gmail.com"
+}
+```
+
+HTTP/1.1 200 OK
+Content-Type: application/json
+```json
+{
+    "message": "updated Password sent to your mail kindly check",
+    "success": true
+}
+```
+
+## Get User Profile
+
+### Retrieve User Profile Information
+
+- **HTTP Method**: `GET`
+- **Endpoint**: `/api/v1/user/profile`
+
+#### Authentication
+
+- **Header**: `Authorization: Bearer <token>`
+
+#### Expected HTTP Response
+
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+```json
+{
+    "profile": {
+        "id": 1,
+        "userId": 2,
+        "address": "101,2nd street, vnr, slm",
+        "city": "salem",
+        "postalCode": "632325",
+        "country": "India",
+        "dateOfBirth": "1999-01-17",
+        "gender": "male",
+        "profilePicture": "https://donateappbuckets.s3.amazonaws.com/users/2.jpg",
+        "createdAt": "2024-10-29T09:57:46.000Z",
+        "updatedAt": "2024-10-29T09:57:46.000Z"
+    },
+    "success": true
+}
+```
+
+## Update User Profile
+
+### Endpoint
+- **HTTP Method**: `POST`
+- **URL**: `/api/v1/user/profile`
+
+### Authentication
+- **Header**: `Authorization: Bearer <token>`
+
+### Request Body
+- **Content-Type**: `multipart/form-data`
+- **Form Data Parameters**:
+  - `address` (string): User's address
+  - `city` (string): City
+  - `postalCode` (string): Postal code
+  - `country` (string): Country
+  - `dateOfBirth` (date): Date of birth in `YYYY-MM-DD` format
+  - `gender` (string): Gender (e.g., `male`, `female`, `other`)
+  - `profilePicture` (file): Image file for the profile picture (`req.file`)
+
+### Sample Response
+
+```json
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "message": "Profile updated successfully",
+    "success": true
+}
+```
+
+## Change User Password
+
+### Endpoint
+- **HTTP Method**: `POST`
+- **URL**: `/api/v1/user/changePassword`
+
+### Authentication
+- **Header**: `Authorization: Bearer <token>`
+
+### Request Body
+- **Content-Type**: `application/json`
+- **Parameters**:
+  - `oldPassword` (string): The current password of the user.
+  - `newPassword` (string): The new password to be set.
+
+### Sample Request
+
+```json
+{
+    "oldPassword": "Jeeva1",
+    "newPassword": "Jeeva2"
+}
+
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "message": "Password Changed Successfully",
+    "success": true
+}
+```
+
+## Get All Users
+
+### Endpoint
+- **HTTP Method**: `GET`
+- **URL**: `/api/v1/user/getAll`
+
+### Authentication
+- **Header**: `Authorization: Bearer <token>`
+- **Role Required**: `admin`
+
+### Expected HTTP Response
+
+```json
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "success": true,
+    "users": [
+        {
+            "id": 3,
+            "name": "Jeeva1",
+            "email": "Jeeva1@gmail.com",
+            "password": "$2b$10$2DFm3PdMu9KaSGc4ygwSWOIRQr3AFB/FxmkaU/Irbrv2TYMJJae7a",
+            "createdAt": "2024-10-29T12:56:08.000Z",
+            "updatedAt": "2024-10-29T13:56:56.000Z"
+        },
+        {
+            "id": 4,
+            "name": "Jeeva2",
+            "email": "Jeeva2@gmail.com",
+            "password": "$2b$10$87pWTVhYiucsLgKz.nwcOO3n.AEF34fXoI4q9LH.SzZB0iF62OLgq",
+            "createdAt": "2024-10-29T14:06:17.000Z",
+            "updatedAt": "2024-10-29T14:14:03.000Z"
+        }
+    ]
+}
+```
+
+## Delete User
+
+### Endpoint
+- **HTTP Method**: `DELETE`
+- **URL**: `/api/v1/user/delete/{userId}`
+
+### Authentication
+- **Header**: `Authorization: Bearer <token>`
+- **Role Required**: `admin`
+
+### Path Parameters
+- `userId` (integer): The ID of the user to be deleted.
+
+### Expected HTTP Response
+
+```json
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "success": true,
+    "message": "User deleted successfully"
+}
+```
 
