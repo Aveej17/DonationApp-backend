@@ -13,15 +13,16 @@
 POST /api/v1/admin/login HTTP/1.1
 Host: api.yourdomain.com
 Content-Type: application/json
-
+```json
 {
     "email": "admin@gmail.com",
     "password": "admin"
 }
-
+```
 
 
 #### Expected HTTP Response:
+```json
 HTTP/1.1 200 OK
 Content-Type: application/json
 
@@ -30,6 +31,7 @@ Content-Type: application/json
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzMwMjAyMTc2LCJleHAiOjE3MzAyODg1NzZ9.5W35AWcg1vFqraaMaS-Q95xwd326rWbms2jZQEroCNk",
     "success": true
 }
+```
 
 
 
@@ -47,16 +49,19 @@ Content-Type: application/json
 - **Authorization**: Bearer token required
 
 #### HTTP Request Example:
+```json
 POST /api/v1/admin/create HTTP/1.1 Host: api.yourdomain.com Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzMwMjAzMDA0LCJleHAiOjE3MzAyODk0MDR9.pu9tZZrNmp8dppM1tvPe0sc0ac-gtzgX3-vGZRow7c8 Content-Type: application/json
 
 { "email": "admin2@gmail.com", "name": "admin2" }
-
+```
 
 #### Expected HTTP Response:
 
 HTTP/1.1 200 OK Content-Type: application/json
-
+```json
 { "message": "Credentials are sent to your employee mail kindly check", "success": true }
+```
+
 ### Explanation of the Request and Response
 
 - **Request Body**: JSON payload containing `email` and `name`.
@@ -69,17 +74,17 @@ HTTP/1.1 200 OK Content-Type: application/json
 - **Endpoint**: `/api/v1/admin/forgot-password`
 
 #### HTTP Request Example:
-
+```json
 POST /api/v1/admin/forgot-password HTTP/1.1 Host: api.yourdomain.com Content-Type: application/json
 
 { "email": "admin@gmail.com" }
-
+```
 #### Expected HTTP Response:
-
+```json
 HTTP/1.1 200 OK Content-Type: application/json
 
 { "message": "New password sent to your email", "success": true }
-
+```
 ### Explanation of the Request and Response
 
 - **Request Body**: JSON payload containing `email`.
@@ -93,17 +98,17 @@ HTTP/1.1 200 OK Content-Type: application/json
 - **Authorization**: Bearer token required
 
 #### HTTP Request Example:
-
+```json
 POST /api/v1/admin/reset-password HTTP/1.1 Host: api.yourdomain.com Authorization: Bearer <your_token_here> Content-Type: application/json
 
 { "email": "admin@gmail.com", "newPassword": "admin" }
-
+```
 #### Expected HTTP Response:
-
+```json
 HTTP/1.1 200 OK Content-Type: application/json
 
 { "message": "Password updated successfully", "success": true }
-
+```
 ### Explanation of the Request and Response
 
 - **Request Body**: JSON payload containing:
@@ -124,11 +129,11 @@ HTTP/1.1 200 OK Content-Type: application/json
 GET /api/v1/admin/approve-charity-requests HTTP/1.1 Host: api.yourdomain.com Authorization: Bearer <your_token_here>
 
 #### Expected HTTP Response:
-
+```json
 HTTP/1.1 200 OK Content-Type: application/json
 
 { "message": "Charities waiting for approval", "approval": [ { "id": 1, "charityId": 1, "status": "pending", "comments": null, "createdAt": "2024-10-29T09:52:39.000Z", "updatedAt": "2024-10-29T09:52:39.000Z" } ] }
-
+```
 ### Explanation of the Request and Response
 
 - **Response**: JSON object containing:
@@ -149,17 +154,18 @@ HTTP/1.1 200 OK Content-Type: application/json
 - **Authorization**: Bearer token required
 
 #### HTTP Request Example:
-
+```json
 POST /api/v1/admin/approveRejectCharity HTTP/1.1 Host: api.yourdomain.com Authorization: Bearer <your_token_here> Content-Type: application/json
 
 { "status": "approved" }
-
+```
 
 #### Expected HTTP Response:
+```json
 HTTP/1.1 200 OK Content-Type: application/json
 
 { "message": "Charity approved successfully", "charity": { "id": 1, "name": "Charity1", "description": "charity for children", "email": "charity1@gmail.com", "password": "$2b$10$kzqzymY5/kediuFd.fsP0u/EPwv1OaueciJmlufmtn6KX3xEnUIzy", "mission": "Achieve No Child labour", "goals": "Educate 10000 children in 2025", "category": null, "location": null, "isApproved": true, "createdAt": "2024-10-29T09:52:38.000Z", "updatedAt": "2024-10-29T09:53:11.735Z" } }
-
+```
 ### Explanation of the Request and Response
 
 - **Request Body**: JSON payload containing:
@@ -190,16 +196,17 @@ HTTP/1.1 200 OK Content-Type: application/json
 - **Endpoint**: `/api/v1/charity/register`
 
 #### HTTP Request Example:
-
+```json
 POST /api/v1/charity/register HTTP/1.1 Host: api.yourdomain.com Content-Type: application/json
 
 { "name": "Charity1", "email": "charity1@gmail.com", "password": "Charity2", "description": "charity for children", "mission": "Achieve No Child labour", "goals": "Educate 10000 children in 2025" }
-
+```
 #### Expected HTTP Response:
-
+```json
 HTTP/1.1 201 Created Content-Type: application/json
 
 { "message": "Charity registered and pending admin approval.", "charity": { "isApproved": false, "id": 1, "name": "Charity1", "description": "charity for children", "email": "charity1@gmail.com", "password": "$2b$10$kzqzymY5/kediuFd.fsP0u/EPwv1OaueciJmlufmtn6KX3xEnUIzy", "mission": "Achieve No Child labour", "goals": "Educate 10000 children in 2025", "updatedAt": "2024-10-29T09:52:38.651Z", "createdAt": "2024-10-29T09:52:38.651Z" } }
+```
 ### Explanation of the Request and Response
 
 - **Request Body**: JSON payload containing:
@@ -233,17 +240,17 @@ HTTP/1.1 201 Created Content-Type: application/json
 - **Endpoint**: `/api/v1/charity/login`
 
 #### HTTP Request Example:
-
+```json
 POST /api/v1/charity/login HTTP/1.1 Host: api.yourdomain.com Content-Type: application/json
 
 { "email": "charity1@gmail.com", "password": "Charity2" }
-
+```
 #### Expected HTTP Response:
-
+```json
 HTTP/1.1 200 OK Content-Type: application/json
 
 { "message": "Login successful", "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6ImNoYXJpdHkiLCJpYXQiOjE3MzAyMDYxMjksImV4cCI6MTczMDI5MjUyOX0.KJlyV27IgOOb9OwA-23kp6rtspq4sLbD4K13zX1Cvno" }
-
+```
 
 ### Explanation of the Request and Response
 
@@ -271,18 +278,18 @@ When a charity wants to log in, they send a POST request with their email and pa
 - **Header**: `Authorization: Bearer <token>`
 
 #### HTTP Request Example:
-
+```json
 PUT /api/v1/charity/update HTTP/1.1 Host: api.yourdomain.com Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6ImNoYXJpdHkiLCJpYXQiOjE3MzAyMDYxMjksImV4cCI6MTczMDI5MjUyOX0.KJlyV27IgOOb9OwA-23kp6rtspq4sLbD4K13zX1Cvno Content-Type: application/json
 
 { "category": "children", "location": "Chennai" }
-
+```
 
 #### Expected HTTP Response:
-
+```json
 HTTP/1.1 200 OK Content-Type: application/json
 
 { "message": "Charity updated successfully", "charity": { "id": 1, "name": "Charity1", "description": "charity for children", "email": "charity1@gmail.com", "password": "$2b$10$kzqzymY5/kediuFd.fsP0u/EPwv1OaueciJmlufmtn6KX3xEnUIzy", "mission": "Achieve No Child labour", "goals": "Educate 10000 children in 2025", "category": "children", "location": "Chennai", "isApproved": true, "createdAt": "2024-10-29T09:52:38.000Z", "updatedAt": "2024-10-29T12:51:00.237Z" } }
-
+```
 
 ### Explanation of the Request and Response
 
@@ -314,7 +321,7 @@ When a charity wants to update their information, they send a PUT request with t
 
 
 #### HTTP Request Example
-
+```json
 POST /api/v1/donation/create HTTP/1.1
 Host: api.yourdomain.com
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6ImNoYXJpdHkiLCJpYXQiOjE3MzAyMDYxMjksImV4cCI6MTczMDI5MjUyOX0.KJlyV27IgOOb9OwA-23kp6rtspq4sLbD4K13zX1Cvno
@@ -324,9 +331,9 @@ Content-Type: application/json
     "amount": 100,
     "charityId": 1
 }
-
+```
 ##### Expected HTTP Response
-
+```json
 HTTP/1.1 200 OK
 Content-Type: application/json
 
@@ -338,7 +345,7 @@ Content-Type: application/json
     "userId": 3,
     "charityId": 1
 }
-
+```
 
 ##### Explanation of the Request and Response
 
@@ -367,7 +374,7 @@ charityId: The ID of the charity receiving the donation.
 - **Header**: `Authorization: Bearer <token>`
 
 #### Expected HTTP Response
-
+```json
 http
 HTTP/1.1 200 OK
 Content-Type: application/json
@@ -387,7 +394,7 @@ Content-Type: application/json
         }
     ]
 }
-
+```
 
 ## Download Donation Receipt
 
@@ -405,6 +412,7 @@ Content-Type: application/json
 - **Header**: `Authorization: Bearer <token>`
 
 #### Expected HTTP Response
+```json
 http
 HTTP/1.1 200 OK
 Content-Type: application/json
@@ -414,7 +422,7 @@ Content-Type: application/json
     "fileUrl": "https://s3.amazonaws.com/receipts/receipt_3.pdf"
 }
 
-
+```
 ## Get Projects
 
 ### Retrieve Charity Projects
@@ -431,7 +439,7 @@ Content-Type: application/json
 - **Header**: `Authorization: Bearer <token>`
 
 #### Expected HTTP Response
-
+```json
 http
 HTTP/1.1 200 OK
 Content-Type: application/json
@@ -452,7 +460,7 @@ Content-Type: application/json
     ]
 }
 
-
+```
 ## Add Project
 
 ### Create a New Charity Project
@@ -514,11 +522,10 @@ Content-Type: application/json
     "donationGoal": 15000.00,
     "amountRaised": 5000.00
 }
-```
 
 HTTP/1.1 200 OK
 Content-Type: application/json
-```json
+
 {
     "message": "Project updated successfully",
     "project": {
@@ -549,11 +556,11 @@ Content-Type: application/json
     "email": "Jeeva1@gmail.com",
     "password": "Jeeva1"
 }
-```
+
 
 HTTP/1.1 201 Created
 Content-Type: application/json
-```json
+
 {
     "message": "User Account Created",
     "success": true
@@ -574,11 +581,11 @@ Content-Type: application/json
     "email": "Jeeva1@gmail.com",
     "password": "Jeeva1"
 }
-```
+
 
 HTTP/1.1 200 OK
 Content-Type: application/json
-```json
+
 {
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mywicm9sZSI6InVzZXIiLCJpYXQiOjE3MzAyMDc4NDYsImV4cCI6MTczMDI5NDI0Nn0.mm-5O_81_nEISt6aPkzrS5bwTIaBAx2haJZLC4xgNkE",
     "success": true
@@ -598,11 +605,11 @@ Content-Type: application/json
 {
     "email": "Jeeva1@gmail.com"
 }
-```
+
 
 HTTP/1.1 200 OK
 Content-Type: application/json
-```json
+
 {
     "message": "updated Password sent to your mail kindly check",
     "success": true
