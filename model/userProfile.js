@@ -48,7 +48,7 @@ const UserProfile = sequelize.define("userProfile", {
     },
 });
 
-UserProfile.belongsTo(User, { foreignKey: 'userId', as: 'user' });
-User.hasOne(UserProfile, { foreignKey: 'userId', as: 'profile' });
+UserProfile.belongsTo(User, { foreignKey: 'userId', as: 'user', onDelete: 'CASCADE' });
+User.hasOne(UserProfile, { foreignKey: 'userId', as: 'profile', onDelete: 'CASCADE' });
 
 module.exports = UserProfile;

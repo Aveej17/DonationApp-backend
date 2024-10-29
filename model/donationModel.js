@@ -12,8 +12,8 @@ const Donation = sequelize.define("donation", {
 });
 
 
-  Donation.belongsTo(User, { foreignKey: 'userId' });
-  Donation.belongsTo(Charity, { foreignKey: 'charityId' });
+Donation.belongsTo(User, { foreignKey: 'userId' });
+Donation.belongsTo(Charity, { foreignKey: 'charityId' });
 
 
 module.exports = Donation;

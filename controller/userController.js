@@ -8,6 +8,7 @@ const {generateRandomPassword} = require('../util/generateRandomPassword');
 const UserProfile = require("../model/userProfile");
 const s3 = require('./awsS3Controller');
 const moment = require('moment');
+const { where } = require('sequelize');
 
 
 exports.signUp = async (req, res, next) => {
@@ -188,3 +189,31 @@ exports.getProfile = async (req, res, next) => {
         next(err);
     }
 };
+
+
+exports.getAll = async (req, res, next)=>{
+    try{
+        const users = await User.findAll();
+        res.status(200).send({success:true, users});
+    }
+    catch(err){
+        next(err);
+    }
+}
+
+exports.deleteUser = async (req, res, next)=>{
+
+    try {
+        
+        const userId = parseInt(req.params.userId, 10);
+        const deletedCount = await User.destroy({ where: { id: userId } });
+        
+        if (deletedCount === 0) {
+            return res.status(404).send({ success: false, message: "User not found" });
+        }
+
+        res.status(200).send({ success: true, message: "User deleted successfully" });
+    } catch (err) {
+        next(err);
+    }
+}
