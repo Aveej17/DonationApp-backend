@@ -108,3 +108,39 @@
     - `updatedAt`: The timestamp when the charity's details were last updated.
 
 
+## Charity Registration
+
+### Register a Charity
+
+- **HTTP Method**: `POST`
+- **Endpoint**: `/api/v1/charity/register`
+
+#### HTTP Request Example:
+
+POST /api/v1/charity/register HTTP/1.1 Host: api.yourdomain.com Content-Type: application/json
+
+{ "name": "Charity1", "email": "charity1@gmail.com", "password": "Charity2", "description": "charity for children", "mission": "Achieve No Child labour", "goals": "Educate 10000 children in 2025" }
+
+### Explanation of the Request and Response
+
+- **Request Body**: JSON payload containing:
+  - `name`: The name of the charity.
+  - `email`: The email address of the charity.
+  - `password`: The password for the charity account.
+  - `description`: A brief description of the charity.
+  - `mission`: The mission statement of the charity.
+  - `goals`: The goals set by the charity.
+
+- **Response**: JSON object containing:
+  - `message`: A message indicating the outcome of the registration (e.g., "Charity registered and pending admin approval.").
+  - `charity`: An object containing details about the registered charity, including:
+    - `isApproved`: A boolean indicating if the charity is approved (default is `false`).
+    - `id`: The ID of the newly registered charity.
+    - `name`: The name of the charity.
+    - `description`: A brief description of the charity.
+    - `email`: The email associated with the charity.
+    - `password`: The hashed password of the charity (should be handled securely).
+    - `mission`: The mission statement of the charity.
+    - `goals`: The goals set by the charity.
+    - `updatedAt`: The timestamp when the charity's details were last updated.
+    - `createdAt`: The timestamp when the charity was created.
