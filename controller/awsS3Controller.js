@@ -18,13 +18,9 @@ exports.uploadFileToS3 = async (fileName, fileContent) => {
         ACL:'public-read'
     };
 
-    try {
-        const data = await s3.upload(params).promise();
-        return data.Location; // This returns the file URL
-    } catch (err) {
-        // console.error("Error uploading file to S3:", err);
-        throw new Error("File upload failed");
-    }
+    const data = await s3.upload(params).promise();
+    return data.Location; // This returns the file URL
+    
 };
 
 
@@ -40,13 +36,9 @@ exports.downloadReceipt = async (donationId, pdfStream) => {
     };
 
     // Upload the PDF to S3
-    try {
-        const data = await s3.upload(s3Params).promise();
+    
+    const data = await s3.upload(s3Params).promise();
         // console.log(data+"data");
         
-        return data.Location;   
-    }
-    catch (err) {
-        throw new Error("File upload failed");
-    }
+    return data.Location;
 };

@@ -171,7 +171,7 @@ exports.updateProject = async (req, res, next) => {
 exports.getAllProjects = async (req, res, next) => {
     try {
         const charityId = req.query.charityId; 
-        console.log(charityId);
+        // console.log(charityId);
         
 
         // Fetch all projects associated with the authenticated charity

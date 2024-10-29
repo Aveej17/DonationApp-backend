@@ -128,7 +128,10 @@ exports.approveCharity = async (req, res, next) => {
         await approval.update({ status });
 
         const charity = await Charity.findByPk(charityId);
-        if (!charity) return res.status(404).json({ message: "Charity not found" });
+        if (!charity) {
+            throw new Error()
+            return res.status(404).json({ message: "Charity not found" });
+        }
 
         // Update charity approval based on the status
         if (status === "approved") {
